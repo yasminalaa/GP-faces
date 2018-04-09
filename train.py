@@ -11,6 +11,8 @@ import random
 import json
 import os
 import shutil
+import matplotlib
+import matplotlib.pyplot as plt
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -41,7 +43,7 @@ def main():
 	parser.add_argument('--data_dir', type=str, default="Data",
 					   help='Data Directory')
 
-	parser.add_argument('--learning_rate', type=float, default=0.002,
+	parser.add_argument('--learning_rate', type=float, default=0.0002,
 					   help='Learning Rate')
 
 	parser.add_argument('--beta1', type=float, default=0.5,
@@ -50,7 +52,7 @@ def main():
 	parser.add_argument('--epochs', type=int, default=100,
 					   help='Max number of epochs')
 
-	parser.add_argument('--save_every', type=int, default=7,
+	parser.add_argument('--save_every', type=int, default=30,
 					   help='Save Model/Samples every x iterations over batches')
 
 	parser.add_argument('--resume_model', type=str, default=None,
@@ -89,6 +91,9 @@ def main():
 	
 	for i in range(args.epochs):
 		batch_no = 0
+		list_losses_d=[]
+		list_losses_g = []
+		list_batches=[]
 		while batch_no*args.batch_size < loaded_data['data_length']:
 			real_images, wrong_images, caption_vectors, z_noise, image_files = get_training_batch(batch_no, args.batch_size, 
 				args.image_size, args.z_dim, args.caption_vector_length, 'train', args.data_dir, args.data_set, loaded_data)
@@ -125,7 +130,9 @@ def main():
 					input_tensors['t_real_caption'] : caption_vectors,
 					input_tensors['t_z'] : z_noise,
 				})
-			
+			list_losses_d.append(d_loss)
+			list_losses_g.append(g_loss)
+			list_batches.append(batch_no)
 			print "LOSSES", d_loss, g_loss, batch_no, i, len(loaded_data['image_list'])/ args.batch_size
 			batch_no += 1
 			if (batch_no % args.save_every) == 0:
@@ -134,6 +141,14 @@ def main():
 				save_path = saver.save(sess, "Data/Models/latest_model_{}_temp.ckpt".format(args.data_set))
 		if i%5 == 0:
 			save_path = saver.save(sess, "Data/Models/model_after_{}_epoch_{}.ckpt".format(args.data_set, i))
+		plt.plot(list_batches,list_losses_g,'r')
+		plt.plot(list_batches,list_losses_d,'g')
+		plt.legend(['Generator','Descriminator'],loc='upper left')
+		plt.title('losses_at_epoch_{}'.format(i))
+		plt.xlabel('batch_no')
+		plt.ylabel('loss')
+		plt.savefig('Data/plots/losses_epoch_{}.png'.format(i))
+		plt.close()
 
 def load_training_data(data_dir, data_set):
 	if data_set == 'faces':
