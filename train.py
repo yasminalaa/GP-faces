@@ -11,8 +11,7 @@ import random
 import json
 import os
 import shutil
-import matplotlib
-import matplotlib.pyplot as plt
+
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -141,15 +140,12 @@ def main():
 				save_path = saver.save(sess, "Data/Models/latest_model_{}_temp.ckpt".format(args.data_set))
 		if i%5 == 0:
 			save_path = saver.save(sess, "Data/Models/model_after_{}_epoch_{}.ckpt".format(args.data_set, i))
-		plt.plot(list_batches,list_losses_g,'r')
-		plt.plot(list_batches,list_losses_d,'g')
-		plt.legend(['Generator','Descriminator'],loc='upper left')
-		plt.title('losses_at_epoch_{}'.format(i))
-		plt.xlabel('batch_no')
-		plt.ylabel('loss')
-		plt.savefig('Data/plots/losses_epoch_{}.png'.format(i))
-		plt.close()
-
+		with open("Data/plots/losses_discriminator_epoch_{}.txt".format(i), 'w') as f:
+			for s in list_losses_d:
+				f.write(str(s) + '\n')
+		with open("Data/plots/losses_generator_epoch_{}.txt".format(i), 'w') as f:
+			for s in list_losses_g:
+				f.write(str(s) + '\n')
 def load_training_data(data_dir, data_set):
 	if data_set == 'faces':
 		h = h5py.File(join(data_dir, 'celebA_captions.hdf5'))
