@@ -237,7 +237,7 @@ def get_training_batch(batch_no, batch_size, image_size, z_dim,
 			wrong_image_array = image_processing.load_image_array(wrong_image_file, image_size)
 			wrong_images[cnt, :,:,:] = wrong_image_array
 
-			random_caption = 1
+			random_caption = 0
 			captions[cnt,:] = loaded_data['captions'][ loaded_data['image_list'][idx] ][ random_caption ][0:caption_vector_length]
 			image_files.append( image_file )
 			cnt += 1
