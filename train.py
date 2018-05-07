@@ -48,13 +48,13 @@ def main():
 	parser.add_argument('--beta1', type=float, default=0.5,
 					   help='Momentum for Adam Update')
 
-	parser.add_argument('--epochs', type=int, default=100,
+	parser.add_argument('--epochs', type=int, default=35,
 					   help='Max number of epochs')
 
 	parser.add_argument('--save_every', type=int, default=30,
 					   help='Save Model/Samples every x iterations over batches')
 
-	parser.add_argument('--resume_model', type=str, default=None,
+	parser.add_argument('--resume_model', type=str, default="Data/Models/model_after_faces_epoch_95.ckpt",
                        help='Pre-Trained Model Path, to resume from')
 
 	parser.add_argument('--data_set', type=str, default="faces",
